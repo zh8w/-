@@ -1,0 +1,438 @@
+/* ---------------------------------------------------------------------------
+ * ProjectDetail 的样式（由 ProjectDetail.vue 通过 <style scoped src> 引入）
+ * 拆分原因：保持单个 .vue 文件在 300 行以内，模板与逻辑更好读。
+ * --------------------------------------------------------------------------- */
+
+.detail {
+  min-width: 0;
+  max-width: 48rem;
+}
+
+/* -----------------------------------------------------------------------------
+ * ① 头部
+ * -------------------------------------------------------------------------- */
+.detail__head {
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.detail__meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1.1rem;
+  margin-bottom: 0.55rem;
+}
+
+.detail__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
+.detail__meta i {
+  font-size: 0.7rem;
+}
+
+/* 在线体验：贴在元信息行右端的小胶囊按钮 */
+.detail__demo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: auto;
+  padding: 0.26rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--accent);
+  text-decoration: none;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.detail__demo i {
+  font-size: 0.62rem;
+}
+
+.detail__demo:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.detail__demo:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* 小程序码：横排小卡，码留白底保证深色主题下也能扫 */
+.detail__qr {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: fit-content;
+  margin-top: 1.1rem;
+  padding: 0.65rem 0.9rem 0.65rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius-card) - 0.35rem);
+  background: var(--surface-inset);
+}
+
+.detail__qr-img {
+  width: 5rem;
+  height: 5rem;
+  object-fit: contain;
+  border-radius: 0.35rem;
+  background: #fff;
+}
+
+.detail__qr-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+}
+
+.detail__qr-text strong {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.detail__qr-text span {
+  font-size: 0.72rem;
+  color: var(--text-faint);
+}
+
+.detail__title {
+  margin: 0 0 0.7rem;
+  font-size: clamp(1.5rem, 3.2vw, 2.1rem);
+  font-weight: 700;
+  line-height: 1.16;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.detail__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0 0 0.9rem;
+  padding: 0;
+  list-style: none;
+}
+
+.detail__tag {
+  padding: 0.22rem 0.55rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--line);
+  background: var(--surface-inset);
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+/* 一句话价值：左边一道主色竖线，作为「结论」的视觉提示 */
+.detail__value {
+  margin: 0;
+  padding-left: 0.85rem;
+  border-left: 2px solid var(--accent);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+/* -----------------------------------------------------------------------------
+ * 区块通用
+ * -------------------------------------------------------------------------- */
+.detail__block {
+  padding-top: 1.6rem;
+}
+
+.detail__h2 {
+  margin: 0 0 0.8rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.detail__prose {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detail__prose p {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.78;
+  color: var(--text-muted);
+}
+
+.detail__prose-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.detail__field {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--text-faint);
+}
+
+/* -----------------------------------------------------------------------------
+ * ③ 难题：编号 + 左侧竖线，不套卡片
+ * -------------------------------------------------------------------------- */
+.problems {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+
+.problem {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+.problem__gutter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.problem__index {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  line-height: 1.4;
+}
+
+/* 竖线贯穿整个难题块，形成一条视觉导引 */
+.problem__line {
+  flex: 1;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--accent) 45%, transparent),
+    var(--line-soft)
+  );
+}
+
+.problem__body {
+  min-width: 0;
+}
+
+.problem__title {
+  margin: 0 0 0.55rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.problem__parts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.problem__part {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: baseline;
+}
+
+.problem__label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
+}
+
+.problem__text {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.72;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+/* 「做法」用主色强调：这是整段里最想让读者看到的一步 */
+.problem__part.is-accent .problem__label {
+  color: var(--accent);
+}
+
+.problem__part.is-accent .problem__text {
+  color: var(--text);
+}
+
+/* -----------------------------------------------------------------------------
+ * ④ 结果与数据
+ * -------------------------------------------------------------------------- */
+.results {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem 1.25rem;
+  margin: 0;
+}
+
+.result {
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--line-soft);
+  min-width: 0;
+}
+
+.result__value {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.8vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.result__label {
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
+/* 数据截止时间：小一号、更淡，不跟指标名抢层级 */
+.result__note {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--text-faint) 78%, transparent);
+}
+
+/* -----------------------------------------------------------------------------
+ * ⑤ 截图
+ * -------------------------------------------------------------------------- */
+.shots {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.shot {
+  margin: 0;
+}
+
+.shot__frame {
+  position: relative;
+  border-radius: calc(var(--radius-card) - 0.25rem);
+  border: 1px solid var(--line);
+  background: var(--surface-inset);
+  overflow: hidden;
+  /* 用 max-height + 比例：有图时按 16:9，窄屏或超高时也不会拉出一整屏空白 */
+  aspect-ratio: 16 / 9;
+  max-height: 22rem;
+}
+
+.shot__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* 界面截图不裁切：完整展示内容，四周留底色即可 */
+  object-fit: contain;
+}
+
+/* 视频比截图多给一点高度，播放条不至于挤在画面里 */
+.shot__frame--video {
+  max-height: 26rem;
+  background: #000;
+}
+
+.shot__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+/* 生产环境未填图时的空框：只有形状，没有文字 */
+.shot__empty {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--surface-inset);
+}
+
+.shot__caption {
+  margin-top: 0.45rem;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--text-faint);
+}
+
+/* -----------------------------------------------------------------------------
+ * 空态（slug 不存在）
+ * -------------------------------------------------------------------------- */
+.detail--missing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding-block: 3rem;
+}
+
+.detail__empty-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 650;
+  color: var(--text);
+}
+
+.detail__empty-text {
+  margin: 0 0 0.6rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.detail__empty-link {
+  text-decoration: none;
+}
+
+/* -----------------------------------------------------------------------------
+ * 1280px：结果指标排 4 列
+ * -------------------------------------------------------------------------- */
+@media (min-width: 1280px) {
+  .results {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* 375px：难题的标签列收窄，避免右侧文字被压成窄条 */
+@media (max-width: 420px) {
+  .problem {
+    grid-template-columns: 1.4rem minmax(0, 1fr);
+    gap: 0.55rem;
+  }
+
+  .problem__part {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.1rem;
+  }
+
+  .problem__label {
+    margin-bottom: 0.05rem;
+  }
+}

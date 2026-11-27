@@ -1,0 +1,359 @@
+/* ---------------------------------------------------------------------------
+ * AppShell 的样式（由 AppShell.vue 通过 <style scoped src> 引入）
+ * 拆分原因：保持单个 .vue 文件在 300 行以内，模板与逻辑更好读。
+ * --------------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * 外壳布局
+ * -------------------------------------------------------------------------- */
+.shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.page-shell {
+  width: 100%;
+  max-width: 78rem;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2.5rem);
+}
+
+/* 内容层抬到光场之上，否则非定位文本会被遮罩压暗 */
+.header,
+.shell__main,
+.shell__footer {
+  position: relative;
+  z-index: 1;
+}
+
+.shell__main {
+  flex: 1;
+  width: 100%;
+  padding-block: clamp(1.25rem, 3vw, 2rem) clamp(2rem, 4vw, 3rem);
+}
+
+.shell__footer {
+  padding-bottom: clamp(1.5rem, 3vw, 2rem);
+}
+
+.shell__copy {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
+/* 跳转链接：平时移出视口，键盘聚焦时滑入 */
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: 50%;
+  z-index: 60;
+  transform: translate(-50%, -180%);
+  padding: 0.55rem 1rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--line-strong);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.8125rem;
+  transition: transform 0.24s var(--ease-out-soft);
+}
+
+.skip-link:focus-visible {
+  transform: translate(-50%, 0);
+}
+
+/* -----------------------------------------------------------------------------
+ * 导航
+ * -------------------------------------------------------------------------- */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid var(--line-soft);
+  background: color-mix(in oklab, var(--bg) 84%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+}
+
+.header__row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.75rem;
+}
+
+/* 左：品牌 */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  flex: 1;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.brand__mark {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  border-radius: 0.55rem;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.brand__mark.is-empty {
+  border-style: dashed;
+}
+
+.brand__mark-ph {
+  font-size: 0.5rem;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+
+/* 站点名过长时省略，避免把右侧按钮挤出屏幕 */
+.brand__name {
+  min-width: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 中：桌面导航 */
+.header__nav {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.header__link {
+  position: relative;
+  padding: 0.45rem 0.7rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.24s var(--ease-out-soft),
+    background-color 0.24s var(--ease-out-soft);
+}
+
+.header__link::after {
+  content: "";
+  position: absolute;
+  left: 0.7rem;
+  right: 0.7rem;
+  bottom: 0.2rem;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s var(--ease-out-soft);
+}
+
+.header__link.is-active {
+  color: var(--text);
+}
+
+.header__link.is-active::after {
+  transform: scaleX(1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .header__link:hover {
+    color: var(--text);
+    background: var(--surface);
+  }
+}
+
+/* 右：按钮组 */
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: none;
+}
+
+.header__download {
+  display: none;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  padding: 0 0.9rem;
+  border-radius: 0.6rem;
+  border: 1px solid transparent;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: filter 0.26s var(--ease-out-soft),
+    box-shadow 0.26s var(--ease-out-soft);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .header__download:hover {
+    filter: brightness(1.07);
+    box-shadow: 0 10px 22px -14px color-mix(in srgb, var(--accent) 78%, transparent);
+  }
+}
+
+/* 汉堡只在窄屏出现 */
+.header__burger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text-muted);
+  transition: color 0.24s var(--ease-out-soft),
+    border-color 0.24s var(--ease-out-soft);
+}
+
+.header__burger:hover {
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+
+/* 所有可点击元素的焦点样式：键盘用户必须看得见 */
+.header__download:focus-visible,
+.header__burger:focus-visible,
+.brand:focus-visible,
+.header__link:focus-visible,
+.drawer__link:focus-visible,
+.drawer__download:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* 768px 以上恢复桌面导航，收起汉堡 */
+@media (min-width: 768px) {
+  .header__nav {
+    display: flex;
+  }
+
+  .header__download {
+    display: inline-flex;
+  }
+
+  .header__burger {
+    display: none;
+  }
+
+  .brand {
+    flex: none;
+  }
+
+  .header__actions {
+    margin-left: auto;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+ * 移动端抽屉
+ * -------------------------------------------------------------------------- */
+.drawer {
+  position: fixed;
+  inset: 3.76rem 0 0;
+  z-index: 39;
+  background: color-mix(in oklab, var(--bg-deep) 72%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.drawer__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.9rem clamp(1rem, 4vw, 2.5rem) 1.5rem;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in oklab, var(--bg) 92%, transparent);
+}
+
+.drawer__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 0.75rem;
+  border-radius: 0.6rem;
+  border-left: 2px solid transparent;
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.24s var(--ease-out-soft),
+    background-color 0.24s var(--ease-out-soft),
+    border-color 0.24s var(--ease-out-soft);
+}
+
+.drawer__link.is-active {
+  color: var(--text);
+  border-left-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.drawer__chevron {
+  font-size: 0.65rem;
+  opacity: 0.5;
+}
+
+.drawer__download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  min-height: 2.75rem;
+  border-radius: 0.65rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* 抽屉滑入 */
+.drawer-enter-active,
+.drawer-leave-active {
+  transition: opacity 0.22s var(--ease-out-soft);
+}
+
+.drawer-enter-active .drawer__panel,
+.drawer-leave-active .drawer__panel {
+  transition: transform 0.28s var(--ease-out-soft);
+}
+
+.drawer-enter-from,
+.drawer-leave-to {
+  opacity: 0;
+}
+
+.drawer-enter-from .drawer__panel,
+.drawer-leave-to .drawer__panel {
+  transform: translateY(-8px);
+}
+
+/* 路由切换淡入 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s var(--ease-out-soft);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}

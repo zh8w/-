@@ -1,0 +1,612 @@
+/* =============================================================================
+ * style.css —— 全局样式与设计令牌
+ *
+ * 分层顺序：
+ *   1. Tailwind 入口
+ *   2. @theme：字体族等静态令牌
+ *   3. 主题令牌（[data-theme="dark"] / [data-theme="light"]）
+ *   4. 基础样式（排版、滚动条、选区、焦点环）
+ *   5. 组件样式（毛玻璃卡片、占位槽、按钮、开关、入场动效）
+ *
+ * 【改色指引】只需改第 3 节里的变量，整站配色会同步变化。
+ * ========================================================================== */
+
+@import "tailwindcss";
+
+/* -----------------------------------------------------------------------------
+ * 1. Tailwind 主题扩展（不随主题切换的静态部分）
+ * -------------------------------------------------------------------------- */
+@theme {
+  /* 西文用自托管的 Archivo 可变字体；中文回落到系统黑体，保证加载速度 */
+  --font-sans: "Archivo Variable", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+
+  /* 等宽字体只用于「配置键」这类索引文字，走系统字体即可，不再额外加载 */
+  --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+
+  --radius-card: 1rem;
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* -----------------------------------------------------------------------------
+ * 2. 主题令牌
+ *
+ * 深色（默认）：近黑的冷底色 + 低饱和蓝紫描边，玻璃卡片靠背景光晕折射出层次
+ * 浅色：同样保留蓝紫倾向，只是整体提亮，不做纯白死板页面
+ * -------------------------------------------------------------------------- */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* 底色与表面 */
+  --bg: #07080d;
+  --bg-deep: #04050a;
+  --surface: rgba(255, 255, 255, 0.045);
+  --surface-hover: rgba(255, 255, 255, 0.062);
+  --surface-inset: rgba(255, 255, 255, 0.028);
+
+  /* 描边 */
+  --line: rgba(150, 158, 255, 0.14);
+  --line-soft: rgba(150, 158, 255, 0.08);
+  --line-strong: rgba(168, 174, 255, 0.34);
+
+  /* 文字 */
+  --text: #e9ebf4;
+  --text-muted: #9ba1b7;
+  --text-faint: #7d8299;
+
+  /* 强调色：低饱和蓝紫 */
+  --accent: #8d95f6;
+  --accent-ink: #07080d;
+  --accent-soft: rgba(141, 149, 246, 0.12);
+
+  /* 光晕 */
+  --glow-1: rgba(96, 110, 240, 0.17);
+  --glow-2: rgba(150, 110, 235, 0.13);
+  --glow-3: rgba(70, 150, 210, 0.08);
+  --glow-opacity: 1;
+
+  /* 阴影 */
+  --shadow-rest: 0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 10px 24px -18px rgba(0, 0, 0, 0.9);
+  --shadow-hover: 0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 18px 44px -22px rgba(24, 28, 78, 0.85),
+    0 0 28px -14px rgba(126, 134, 250, 0.45);
+
+  /* 玻璃拟态 */
+  --glass-bg: linear-gradient(
+    158deg,
+    rgba(255, 255, 255, 0.062),
+    rgba(255, 255, 255, 0.018) 46%,
+    rgba(255, 255, 255, 0.03)
+  );
+  --glass-blur: 18px;
+  --sheen: rgba(255, 255, 255, 0.16);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f1f2f8;
+  --bg-deep: #e8e9f2;
+  --surface: rgba(255, 255, 255, 0.66);
+  --surface-hover: rgba(255, 255, 255, 0.86);
+  --surface-inset: rgba(255, 255, 255, 0.55);
+
+  --line: rgba(96, 104, 190, 0.17);
+  --line-soft: rgba(96, 104, 190, 0.1);
+  --line-strong: rgba(88, 96, 190, 0.4);
+
+  --text: #171a26;
+  --text-muted: #545a70;
+  --text-faint: #616878;
+
+  --accent: #5560d4;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(85, 96, 212, 0.1);
+
+  --glow-1: rgba(112, 124, 240, 0.13);
+  --glow-2: rgba(158, 124, 240, 0.1);
+  --glow-3: rgba(86, 158, 214, 0.09);
+  --glow-opacity: 1;
+
+  --shadow-rest: 0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 8px 22px -18px rgba(24, 28, 70, 0.5);
+  --shadow-hover: 0 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0 18px 40px -22px rgba(40, 44, 110, 0.42),
+    0 0 26px -16px rgba(90, 100, 220, 0.4);
+
+  --glass-bg: linear-gradient(
+    158deg,
+    rgba(255, 255, 255, 0.82),
+    rgba(255, 255, 255, 0.5) 48%,
+    rgba(255, 255, 255, 0.66)
+  );
+  --glass-blur: 16px;
+  --sheen: rgba(255, 255, 255, 0.75);
+}
+
+/* -----------------------------------------------------------------------------
+ * 3. 基础层
+ * -------------------------------------------------------------------------- */
+/* 锚点跳转时给 sticky 顶栏让出高度，避免标题被遮住 */
+section[id],
+#hero {
+  scroll-margin-top: 6rem;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* 颜色过渡只在「页面挂载完成后」开启（由 App.vue 写入 data-theme-ready），
+ * 否则首次加载时背景会从默认色渐变到主题色，出现一下不必要的闪动。 */
+[data-theme-ready] body {
+  transition: background-color 0.4s var(--ease-out-soft),
+    color 0.4s var(--ease-out-soft);
+}
+
+/* 中文正文的默认行距与中西文混排留白 */
+p {
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* 浏览器原生部件的主题化：选区、滚动条、焦点环 */
+::selection {
+  background: color-mix(in oklab, var(--accent) 38%, transparent);
+  color: var(--text);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 99px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* -----------------------------------------------------------------------------
+ * 4. 背景光场
+ *
+ * 全站唯一的大面积装饰：三团极慢漂移的低饱和光晕。
+ * 玻璃卡片需要「背后有东西可折射」才成立，所以这层是材料，不是特效。
+ * 只用 transform 动画，开销极低；尊重系统「减少动态效果」设置。
+ * -------------------------------------------------------------------------- */
+.aura {
+  position: fixed;
+  inset: -12vmax;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--glow-opacity);
+  background-image: radial-gradient(
+      42vmax 38vmax at 18% 12%,
+      var(--glow-1),
+      transparent 62%
+    ),
+    radial-gradient(38vmax 34vmax at 82% 24%, var(--glow-2), transparent 64%),
+    radial-gradient(46vmax 40vmax at 52% 92%, var(--glow-3), transparent 66%);
+  animation: aura-drift 48s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* 中心压暗 / 压亮，保证正文对比度 */
+.aura-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    120vmax 90vmax at 50% 0%,
+    transparent 0%,
+    color-mix(in oklab, var(--bg) 78%, transparent) 78%
+  );
+}
+
+@keyframes aura-drift {
+  from {
+    transform: translate3d(-1.5%, -1%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(1.5%, 1.5%, 0) scale(1.06);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+ * 5. 毛玻璃卡片
+ *
+ * 结构：1px 低饱和蓝紫描边 + 顶部一道极细高光 + 背景模糊。
+ * 悬停只做「轻微上浮 + 描边提亮 + 柔光」，没有缩放抖动、没有频闪。
+ * -------------------------------------------------------------------------- */
+.card {
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--line);
+  background-image: var(--glass-bg);
+  background-color: transparent;
+  box-shadow: var(--shadow-rest);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(125%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(125%);
+  overflow: hidden;
+  transition: translate 0.35s var(--ease-out-soft),
+    border-color 0.35s var(--ease-out-soft),
+    box-shadow 0.35s var(--ease-out-soft),
+    background-color 0.35s var(--ease-out-soft);
+}
+
+/* 顶部 1px 高光，玻璃厚度的来源 */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--sheen) 60%, transparent) 22%,
+    var(--sheen) 50%,
+    color-mix(in srgb, var(--sheen) 60%, transparent) 78%,
+    transparent
+  );
+  opacity: 0.7;
+  transition: opacity 0.35s var(--ease-out-soft);
+  pointer-events: none;
+}
+
+/* 悬停时的斜向柔光，随卡片一起淡入 */
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    60% 70% at 20% 0%,
+    color-mix(in srgb, var(--accent) 14%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-out-soft);
+  pointer-events: none;
+}
+
+/* 只在支持悬停的设备上启用，避免触屏「粘住」悬停态
+ * 用独立 translate 属性而不是 transform：入场动效占用 transform，
+ * 两者写在同一条属性上会互相覆盖（hover 上浮就会失效）。 */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    translate: 0 -4px;
+    border-color: var(--line-strong);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .card:hover::before {
+    opacity: 1;
+  }
+
+  .card:hover::after {
+    opacity: 1;
+  }
+}
+
+/* 有交互行为的卡片（可点击 / 可聚焦）才加 .card--interactive 类 */
+.card--interactive {
+  cursor: pointer;
+}
+
+/* -----------------------------------------------------------------------------
+ * 6. 占位槽
+ *
+ * 页面只搭骨架，所有待填内容统一用这套「占位语言」表达：
+ *   .ph-text   —— 占位短语（如「名字占位」）
+ *   .ph-bar    —— 占位条（模拟文字行）
+ *   .ph-media  —— 图片占位（虚线框 + 图标）
+ *   .ph-key    —— 配置键标签（等宽字体，告诉你该改哪个字段）
+ * -------------------------------------------------------------------------- */
+.ph-text {
+  color: var(--text-faint);
+  text-decoration: underline dashed color-mix(in srgb, var(--line-strong) 70%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+}
+
+.ph-bar {
+  height: 0.62rem;
+  border-radius: 99px;
+  background: var(--surface-inset);
+  border: 1px dashed color-mix(in srgb, var(--line) 85%, transparent);
+}
+
+.ph-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: 0.5rem;
+  border-radius: calc(var(--radius-card) - 0.35rem);
+  border: 1px dashed color-mix(in srgb, var(--line-strong) 62%, transparent);
+  background: var(--surface-inset);
+  color: var(--text-faint);
+  text-align: center;
+  overflow: hidden;
+}
+
+/* 图片占位内的一点点斜向渐变，避免大面积死板灰块 */
+.ph-media::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    148deg,
+    color-mix(in srgb, var(--accent) 9%, transparent),
+    transparent 58%
+  );
+  pointer-events: none;
+}
+
+.ph-key {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+  color: var(--text-faint);
+  background: var(--surface-inset);
+  border: 1px solid var(--line-soft);
+  border-radius: 99px;
+  padding: 0.15rem 0.5rem;
+  white-space: nowrap;
+}
+
+/* 虚线小标签，用于「技能占位」「奖项占位」这类容器 */
+.ph-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.42rem 0.75rem;
+  border-radius: 999px;
+  border: 1px dashed color-mix(in srgb, var(--line-strong) 55%, transparent);
+  background: var(--surface-inset);
+  color: var(--text-faint);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+/* -----------------------------------------------------------------------------
+ * 7. 交互控件
+ * -------------------------------------------------------------------------- */
+/* 主按钮：实心强调色 */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0 1.15rem;
+  border-radius: 0.7rem;
+  border: 1px solid transparent;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: transform 0.28s var(--ease-out-soft),
+    box-shadow 0.28s var(--ease-out-soft), filter 0.28s var(--ease-out-soft);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.06);
+    box-shadow: 0 12px 26px -14px color-mix(in srgb, var(--accent) 75%, transparent);
+  }
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* 次按钮：玻璃描边 */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0 1.15rem;
+  border-radius: 0.7rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: transform 0.28s var(--ease-out-soft),
+    border-color 0.28s var(--ease-out-soft), background-color 0.28s var(--ease-out-soft);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-ghost:hover {
+    transform: translateY(-2px);
+    border-color: var(--line-strong);
+    background: var(--surface-hover);
+  }
+}
+
+.btn-ghost:active {
+  transform: translateY(0);
+}
+
+/* 主题切换开关 */
+.theme-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.7rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text-muted);
+  transition: color 0.28s var(--ease-out-soft),
+    border-color 0.28s var(--ease-out-soft),
+    background-color 0.28s var(--ease-out-soft);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .theme-toggle:hover {
+    color: var(--text);
+    border-color: var(--line-strong);
+    background: var(--surface-hover);
+  }
+}
+
+/* 两个图标交叉淡入淡出，不做旋转甩动 */
+.theme-toggle .toggle-icon {
+  position: absolute;
+  transition: opacity 0.32s var(--ease-out-soft),
+    transform 0.32s var(--ease-out-soft);
+}
+
+[data-theme="dark"] .theme-toggle .icon-sun {
+  opacity: 0;
+  transform: translateY(-4px) scale(0.9);
+}
+
+[data-theme="dark"] .theme-toggle .icon-moon {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+[data-theme="light"] .theme-toggle .icon-sun {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+[data-theme="light"] .theme-toggle .icon-moon {
+  opacity: 0;
+  transform: translateY(4px) scale(0.9);
+}
+
+/* 吸顶导航的链接与滚动定位指示 */
+.nav-link {
+  position: relative;
+  padding: 0.4rem 0.2rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  transition: color 0.24s var(--ease-out-soft);
+  white-space: nowrap;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.32s var(--ease-out-soft);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-link:hover {
+    color: var(--text);
+  }
+
+  .nav-link:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+.nav-link[aria-current="true"] {
+  color: var(--text);
+}
+
+.nav-link[aria-current="true"]::after {
+  transform: scaleX(1);
+}
+
+/* -----------------------------------------------------------------------------
+ * 8. 入场动效
+ *
+ * 全站只有这一次编排好的入场：卡片自下而上淡入，组内按索引错开 60ms。
+ * 默认可见；只有 JS 标记了 data-motion="on" 才隐藏，避免脚本失败时白屏。
+ * -------------------------------------------------------------------------- */
+[data-motion="on"] .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+[data-motion="on"] .reveal.is-in {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.75s var(--ease-out-soft) var(--delay, 0ms),
+    transform 0.75s var(--ease-out-soft) var(--delay, 0ms);
+}
+
+/* -----------------------------------------------------------------------------
+ * 9. 无障碍：尊重「减少动态效果」
+ * -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .aura {
+    animation: none;
+  }
+}
+
+/* 移动端降低模糊半径，换取滚动帧率 */
+@media (max-width: 640px) {
+  .card {
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    backdrop-filter: blur(12px) saturate(120%);
+  }
+}
+
+

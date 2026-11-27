@@ -1,0 +1,18 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.log
+
+# Chrome 临时配置目录（headless 截图时产生）
+.tmp-chrome/
+
+# 构建日志
+build.log
+
+# 临时评审脚本
+.tmp-review/

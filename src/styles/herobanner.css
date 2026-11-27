@@ -1,0 +1,635 @@
+/* ---------------------------------------------------------------------------
+ * HeroBanner 的样式（由 HeroBanner.vue 通过 <style scoped src> 引入）
+ *
+ * 断点约定：1024px 是「左右两栏 → 上下堆叠」的唯一分界，
+ * 876 / 1280 等只做细节微调，不再改变结构。
+ * --------------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * 1. 容器
+ *
+ * min-height 用 clamp(440px, 64vh, 660px)：矮屏不至于挤，高屏不会拉出空白。
+ * 明确不用 100vh —— 那会把下方简历区整个推到首屏之外。
+ * -------------------------------------------------------------------------- */
+.hero {
+  display: flex;
+  align-items: center;
+  min-height: clamp(440px, 64vh, 660px);
+  padding-block: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.hero__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+  width: 100%;
+  align-items: start;
+}
+
+/* -----------------------------------------------------------------------------
+ * 2. 左栏：文字
+ * -------------------------------------------------------------------------- */
+.hero__main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+  min-width: 0;
+  max-width: 720px;
+}
+
+/* ① 状态徽标 */
+.hero__status {
+  margin: 0;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-inset);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ② 姓名：中文 + 拼音同一行基线 */
+.hero__name {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.7rem;
+  margin: 0.3rem 0 0;
+  font-size: clamp(34px, 5vw, 52px);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.hero__name-zh {
+  /* 中文不跟西文一起被 letter-spacing 挤到 */
+  letter-spacing: 0.01em;
+}
+
+.hero__name-pinyin {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+
+/* ③ 岗位方向：主方向加粗，副方向弱化 */
+.hero__role {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.7rem;
+  margin: 0.1rem 0 0;
+}
+
+.hero__role-primary {
+  font-size: clamp(16px, 1.6vw, 18px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.hero__role-secondary {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+/* ④ 简介：三行短句，每句独立成行 */
+.hero__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  margin-top: 0.1rem;
+}
+
+.hero__intro p {
+  margin: 0;
+  /* 15–16px，行高 1.7：三行读起来是「一段话」，不是三个段落 */
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+/* -----------------------------------------------------------------------------
+ * 个人信息区（简介之下、指标条之上）
+ *
+ * 2 列 × 若干行；每行 label + value。
+ * 刻意不给卡片底色与描边：它是一段「资料」，不是又一块内容卡，
+ * 只用行间 1px 分隔线建立秩序，靠上下留白与指标条拉开距离。
+ * -------------------------------------------------------------------------- */
+.hero__profile {
+  display: grid;
+  /* 默认单列；≥768px 变 2 列（见文件末尾的媒体查询） */
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  margin: 0.35rem 0 0;
+  /* 与指标条之间保持 ≤24px 的紧凑距离 */
+  margin-bottom: 0;
+}
+
+.hero__profile-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+  padding-block: 0.42rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+/* 长内容（联系方式 / 证书）横跨两列，避免被压成两行 */
+.hero__profile-row.is-wide {
+  grid-column: 1 / -1;
+}
+
+/* 最后一行保留下边线：指标条删除后，这条线负责给「个人信息」整块收口 */
+
+.hero__profile-label {
+  flex: none;
+  /* 图标(1em) + 0.42rem 间距 + 4 个汉字（3.9rem）≈ 5.4rem，
+   * 统一宽度保证 2 列布局下右侧的值仍然纵向对齐 */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  width: 5.4rem;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* 行首图标：只承担「区分行」的职责，所以压小、降低对比，不与正文抢注意力 */
+.hero__profile-icon {
+  flex: none;
+  width: 1em;
+  font-size: 12px;
+  line-height: 1;
+  text-align: center;
+  color: var(--text-faint);
+}
+
+.hero__profile-value {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  /* 中文优先在标点 / 空格处断行，不在词中间直接切断。
+   * overflow-wrap: anywhere 只作为兜底：真的放不下（如超长邮箱）时才允许硬断，
+   * 避免横向溢出。 */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+/* 一行里放多个联系方式（邮箱 / 手机）：各自带图标，靠间距而不是「·」分隔。
+ * 用 inline-flex 而非 flex 容器，窄屏时仍能自然换行。 */
+.hero__profile-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36rem;
+  color: var(--text);
+  text-decoration: none;
+  transition: color 0.22s var(--ease-out-soft);
+}
+
+/* 两项之间留出明显的间隔，眼睛一眼能分开 */
+.hero__profile-link + .hero__profile-link {
+  margin-left: 1.1rem;
+}
+
+.hero__profile-link i {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero__profile-link:hover {
+    color: var(--accent);
+  }
+
+  .hero__profile-link:hover i {
+    color: var(--accent);
+  }
+}
+
+.hero__profile-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* -----------------------------------------------------------------------------
+ * 3. 指标条（已删除）
+ *
+ * 原先是 4 格数字条（项目数 / 班级评分第一 / 在线用户 / 省级奖）。
+ * 首屏已有个人信息、技能摘要与作品索引，数字再排一遍属于重复，
+ * 故连同模板、数据与样式一并移除。若要恢复，需要同时补回：
+ *   site.js 的 hero.metrics、HeroBanner 的 <dl>、以及本段样式。
+ * -------------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * 4. 两个入口按钮
+ * -------------------------------------------------------------------------- */
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.hero__actions :deep(.btn-primary),
+.hero__actions :deep(.btn-ghost) {
+  text-decoration: none;
+}
+
+.hero__actions :deep(.btn-primary:focus-visible),
+.hero__actions :deep(.btn-ghost:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* -----------------------------------------------------------------------------
+ * 5. 技能摘要：3 行 label + 值
+ *
+ * label 定宽右对齐，值与 label 之间形成一条清晰的竖向分界；
+ * 值是逗号分隔的一段小字，不做标签云。
+ * -------------------------------------------------------------------------- */
+.hero__skills {
+  display: flex;
+  flex-direction: column;
+  gap: 0.32rem;
+  width: 100%;
+  margin: 0.55rem 0 0;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--line-soft);
+}
+
+.hero__skill {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.hero__skill-label {
+  font-size: 12px;
+  color: var(--text-faint);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.hero__skill-value {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--text-muted);
+  /* 值可能很长，允许自然换行，不许横向溢出 */
+  overflow-wrap: anywhere;
+}
+
+/* -----------------------------------------------------------------------------
+ * 6. 右栏：证件照卡 + 作品索引卡
+ * -------------------------------------------------------------------------- */
+.hero__side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  width: 100%;
+  min-width: 0;
+}
+
+/* 证件照卡：固定 4:5，圆角 12px，1px 描边，裁切溢出 */
+.hero__photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  background: var(--surface-inset);
+  isolation: isolate;
+}
+
+/* 有图：铺满，从顶部开始裁（证件照的头部通常在画面上方） */
+.hero__photo-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* 无图空态：同一容器内的设计化版本，不是「没填完的槽」 */
+.hero__photo-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.1rem 1rem 0.9rem;
+  background-image: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--accent) 8%, transparent),
+    color-mix(in oklab, var(--bg) 60%, transparent)
+  );
+}
+
+/* 大字首字：视觉主体，沉在主色 30% 的透明度里 */
+.hero__photo-initial {
+  margin: auto;
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: color-mix(in srgb, var(--accent) 30%, transparent);
+  user-select: none;
+}
+
+/* 底部三行：学校 / 专业 / 可实习时间 */
+.hero__photo-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+/* -----------------------------------------------------------------------------
+ * 7. 作品索引卡
+ *
+ * 条目 hover / 选中：左侧 3px 主色竖线 + 文字提亮。
+ * 刻意不给整块加背景色 —— 整块变色会把 4 条读成 4 个按钮，抢掉主按钮。
+ * -------------------------------------------------------------------------- */
+.index-card {
+  display: flex;
+  flex-direction: column;
+  padding: 0.85rem 0.75rem 0.6rem;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface-inset);
+}
+
+.index-card__title {
+  margin: 0 0 0.45rem;
+  padding-inline: 0.35rem;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.index-card__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.index-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.42rem 0.45rem 0.42rem 0.55rem;
+  border-left: 3px solid transparent;
+  border-radius: 0 4px 4px 0;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: border-color 0.22s var(--ease-out-soft),
+    color 0.22s var(--ease-out-soft);
+}
+
+/* 条目头：短名 + 时间，两端对齐 */
+.index-item__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.index-item__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.index-item__period {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-faint);
+}
+
+/* 一行结果：单行截断，保证 4 条高度一致 */
+.index-item__note {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.index-item.is-active,
+.index-item:hover {
+  border-left-color: var(--accent);
+}
+
+.index-item.is-active .index-item__name,
+.index-item:hover .index-item__name {
+  color: var(--text);
+}
+
+.index-item.is-active .index-item__note,
+.index-item:hover .index-item__note {
+  color: var(--text);
+}
+
+.index-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* 底部「查看全部」 */
+.index-card__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.55rem 0.25rem;
+  border-top: 1px solid var(--line-soft);
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.22s var(--ease-out-soft);
+}
+
+.index-card__more i {
+  font-size: 0.65rem;
+  transition: translate 0.22s var(--ease-out-soft);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .index-card__more:hover {
+    color: var(--accent);
+  }
+
+  .index-card__more:hover i {
+    translate: 3px 0;
+  }
+}
+
+.index-card__more:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* -----------------------------------------------------------------------------
+ * 8. ≥1024px：左右两栏
+ *
+ * 左栏锁 720px，右栏 320px（落在需求的 300–340 区间），gap 固定 48px，
+ * justify-content: space-between 让两栏在超宽屏上分别贴住左右边界，
+ * 而不是把 48px 的 gap 撑成 200px。
+ * -------------------------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .hero__layout {
+    grid-template-columns: minmax(0, 720px) 320px;
+    gap: 48px;
+    justify-content: space-between;
+    /* 两栏等高：右栏（照片 4:5 + 索引卡）天然比左栏高，
+     * 让左栏撑满同一行高度、内容在内部垂直居中，
+     * 避免左下角空出一大块（1024 下能差出 200px 以上）。 */
+    align-items: stretch;
+  }
+
+  .hero__main {
+    justify-content: center;
+  }
+
+  .hero__side {
+    padding-top: 0.35rem;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+ * 9. <1024px：右栏下移
+ *
+ * 手机 / 平板上右栏宽度 100%，但证件照卡限宽 240px，避免一张 4:5 的图
+ * 占掉半屏；剩下的宽度留给索引卡，形成「小图 + 宽列表」的紧凑组合。
+ * -------------------------------------------------------------------------- */
+@media (max-width: 1023px) {
+  .hero {
+    align-items: flex-start;
+  }
+
+  .hero__layout {
+    gap: 1.75rem;
+  }
+
+  .hero__side {
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+  }
+
+  .hero__photo {
+    width: 240px;
+    max-width: 240px;
+    flex: none;
+  }
+
+  .index-card {
+    flex: 1 1 16rem;
+    min-width: 0;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+ * 10. 个人信息区的列数
+ *
+ * <768px：单列，且「标签 / 值」上下排（右侧不再有第二列可对齐）。
+ * ≥768px：2 列网格；长值行（.is-wide）横跨两列 —— 这样既满足「2 列」的
+ *         信息密度，又不会把「广东轻工职业技术大学 · 软件技术（专科）」
+ *         逼到词中间折行。
+ * -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  /* 单列 + 上下排，label 不再定宽 */
+  .hero__profile-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+  }
+
+  .hero__profile-label {
+    width: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero__profile {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.75rem;
+  }
+
+  /* 长值行横跨两列 */
+  .hero__profile-row.is-wide {
+    grid-column: 1 / -1;
+  }
+
+  /* 2 列时：左侧单元格的右半边需要一点内部间距感，
+   * 直接给每行右侧补 padding 会让分隔线不齐，所以改由列间距承担 */
+  .hero__profile-row {
+    padding-right: 0;
+  }
+}
+
+/* 375px：证件照和索引卡上下排，避免两栏各剩一半宽度 */
+@media (max-width: 560px) {
+  .hero__side {
+    flex-direction: column;
+  }
+
+  .hero__photo {
+    width: 100%;
+    max-width: 220px;
+  }
+
+  .index-card {
+    width: 100%;
+    flex: initial;
+  }
+
+  /* 手机上一行放不下两组信息，时间和短名各占一行 */
+  .index-item__head {
+    gap: 0.4rem;
+  }
+
+  .hero__skill {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    gap: 0.55rem;
+  }
+}
